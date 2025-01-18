@@ -11,10 +11,14 @@ IMAGE_DIR = os.path.abspath("./ressources/videos")
 def get_image(chemin: str, image: str):
     image_path = os.path.join(IMAGE_DIR, chemin)
     print(image_path)
-    if os.path.exists(image_path):
-        return send_from_directory(image_path, image)
-    else:
-        return {"error": "Image non trouvée a l'adresse " + image_path}
+    try:
+        if os.path.exists(image_path):
+            return send_from_directory(image_path, image)
+        else:
+            return {"error": "Image non trouvée a l'adresse " + image_path}
+    except Exception as e:
+        print(f"Erreur lors de la récupération de l'image : {e}")
+        return {"error": "Failed to retrieve the image."}
 
 
 if __name__ == "__main__":

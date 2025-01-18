@@ -18,6 +18,9 @@ class EnvironmentModel:
     # templates pour chaque cas de description en fonction des besoins
 
     def describe_environment(self, image_url, content):
+        print("-------------------------------------------------------------")
+        print("url de l'image dans la fonction decrire environnement :" +image_url)
+        print("-------------------------------------------------------------")
         # On genere le message
         messages = generate_message(image_url,content)
         # Utiliser un modèle supportant l'analyse d'image
@@ -44,18 +47,24 @@ class EnvironmentModel:
         #             text = text[20:]
 
     def describe_object(self, image_url, content):
+        print("-------------------------------------------------------------")
+        print("url de l'image dans la fonction decrire objet :" +image_url)
+        print("-------------------------------------------------------------")
         messages = generate_message(image_url, content)
         response = self.client.chat.completions.create(
             model=self.model,
             messages=messages,
             max_tokens=2000,
-            temperature=0.5,
+            temperature=0.7,
             top_p=0.5,
             stream=False
         )
         return self._extract_response_text(response)
     
     def locate_object(self, image_url, content):
+        print("-------------------------------------------------------------")
+        print("url de l'image dans la fonction localiser objet :" +image_url)
+        print("-------------------------------------------------------------")
         messages = generate_message(image_url, content)
         response = self.client.chat.completions.create(
             model=self.model,

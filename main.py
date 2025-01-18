@@ -1,6 +1,4 @@
 import os
-from time import sleep
-
 from controllers.imagesController import app
 from services.audioServices.syntheseVocalService import Langue
 from services.cameraServices.CaptureService import Camera
@@ -11,7 +9,7 @@ from services.orchestrationServices.OrcherstrationModel import OrchestrationMode
 
 os.environ["HUGGINGFACEHUB_API_TOKEN"] = "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"
 os.environ["VOSK_MODEL_PATH"] = "./models/vosk-model-small-en-us-0.15"
-os.environ["NGROK_URL"] = "https://a91c-129-0-60-56.ngrok-free.app"
+os.environ["NGROK_URL"] = "https://7e9d-129-0-76-110.ngrok-free.app"
 
 
 if __name__ == '__main__':
@@ -22,8 +20,11 @@ if __name__ == '__main__':
     print("-----------before Camera launched")
     capture_Thread.start()
     print("-----------Camera launched")
-    orchestration = OrchestrationModel(langue=Langue.EN)  # Choisir la langue (EN ou FR)
+    orchestration = OrchestrationModel(camera=camera, langue=Langue.EN)  # Choisir la langue (EN ou FR)
     print("-----------before Orchestration launched")
-    orchestration.lancer_conversation()
+    try:
+        orchestration.lancer_conversation()
+    except Exception as e:
+        print(f"Erreur lors du lancement de la conversation : {e}")
     print("-----------Conversation launched")
 

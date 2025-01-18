@@ -3,8 +3,7 @@ import os
 import pyaudio
 from vosk import KaldiRecognizer, Model
 
-os.environ["VOSK_MODEL_PATH"] = "/home/lelouch/VscodeWorkspace/LINA/models/vosk-model-small-en-us-0.15/"
-
+os.environ["VOSK_MODEL_PATH"] = "/home/lelouch/VscodeWorkspace/LINA/models//vosk-model-small-en-us-0.15/"
 class ReconnaissanceVocalModel:
     def __init__(self, keywords=["nina"]):
         self.model = Model(os.getenv("VOSK_MODEL_PATH"))

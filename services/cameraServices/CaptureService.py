@@ -15,7 +15,7 @@ class Camera:
 
     def __init__(self):
         if not hasattr(self, 'cap'):
-            self.cap = cv2.VideoCapture('http://192.168.1.111:81/stream')  # Utiliser la caméra par défaut
+            self.cap = cv2.VideoCapture(0)  # Utiliser la caméra par défaut
             self.pause_reading = threading.Event()
             self.resume_reading = threading.Event()
             self.save_dir = os.path.abspath("ressources/videos")
@@ -32,7 +32,7 @@ class Camera:
     @property
     def get_index(self):
         """Retourne l'index de la dernière frame enregistrée."""
-        return self._index
+        return self._index -1
 
     def create_dir(self, path):
         """Crée un répertoire s'il n'existe pas."""

@@ -1,15 +1,17 @@
 from services.audioServices.syntheseVocalService import Langue, SyntheseVocalService
+from services.cameraServices.CaptureService import Camera
 from services.conversationServices.PetitModelConversation import PetitModeleConversation
 from services.conversationServices.DecisionModel import DecisionModel
 from services.reconnaissanceVocale.ReconnaissanceVocalModel import ReconnaissanceVocalModel
 import threading
 
 class OrchestrationModel:
-    def __init__(self, langue: Langue = Langue.EN):
+    def __init__(self,camera: Camera, langue: Langue = Langue.EN,  ):
         self.reconnaissance_vocale = ReconnaissanceVocalModel(keywords=["nina","lyna","lina","luna","nyna"])
         self.petit_modele = PetitModeleConversation()
         self.synthese_vocale = SyntheseVocalService(langue)
         self.grand_modele = DecisionModel() 
+        self.camera = camera
 
     def lancer_conversation(self):
         """Lance le processus d'orchestration."""
@@ -21,6 +23,7 @@ class OrchestrationModel:
             demande_confirmee = self.recuperer_et_confirmer_demande()
             if not demande_confirmee:
                 continue  # Si la demande n'est pas confirmée, recommencer
+            self.camera.pause_video()
 
             # Étape 2 : Traiter la demande avec le grand modèle
             reponse_finale = self.traiter_demande(demande_confirmee)
@@ -28,7 +31,8 @@ class OrchestrationModel:
             # Étape 3 : Générer la réponse finale
             self.synthese_vocale.syntheseVocal(reponse_finale)
             self.synthese_vocale.syntheseVocal("Conversation ended. Waiting for a new request...")
-
+            self.camera.resume_video()
+            
     def recuperer_et_confirmer_demande(self):
         """Récupère la demande vocale et la confirme avec l'utilisateur."""
         # Étape 1 : Récupérer la demande vocale
@@ -70,11 +74,13 @@ class OrchestrationModel:
             )
             acknowledgment_thread.start()
 
-            # Étape 2 : Traiter la demande avec le grand modèle
-            reponse_grand_modele = self.grand_modele.analyser_demande(demande)  # À implémenter
+            try:
+                # Étape 2 : Traiter la demande avec le grand modèle
+                reponse_grand_modele = self.grand_modele.analyser_demande(demande)  # À implémenter
+            except Exception as e:
+                print(f"Erreur lors de l'analyse de la demande avec le grand modèle : {e}")
+                return "Sorry, I couldn't process your request."
 
-   
             # Étape 3 : Générer la réponse finale avec le petit modèle
             reponse_finale = self.petit_modele.respond(reponse_grand_modele, prompt_type="closing", response=reponse_grand_modele)
             return reponse_finale
-        

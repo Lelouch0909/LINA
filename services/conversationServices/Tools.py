@@ -58,7 +58,11 @@ class Tools:
         print("------------ Dans la fonciton decrire_piece ---------------------")
         print(image_url)
         env_model = EnvironmentModel()
-        response = env_model.describe_environment(image_url,content)
+        try:
+            response = env_model.describe_environment(image_url, content)
+        except Exception as e:
+            print(f"Erreur lors de la description de l'environnement : {e}")
+            response = {"error": "Failed to describe the environment."}
         print(response)
 
         print("------------ Dans la fonciton decrire_piece ---------------------")
@@ -110,7 +114,11 @@ class Tools:
         print("------------ Dans la fonciton localiser_objet ---------------------")
         print(image_url)
         env_model = EnvironmentModel()
-        response = env_model.locate_object(image_url,content)
+        try:
+            response = env_model.locate_object(image_url, content)
+        except Exception as e:
+            print(f"Erreur lors de la localisation de l'objet : {e}")
+            response = {"error": "Failed to locate the object."}
         print(response)
         print("------------ Dans la fonciton localiser_objet ---------------------")
         return response
@@ -144,7 +152,11 @@ class Tools:
         print("------------ Dans la fonciton decrire_objet ---------------------")
         print(image_url)
         env_model = EnvironmentModel()
-        response = env_model.describe_object(image_url,content)
+        try:
+            response = env_model.describe_object(image_url, content)
+        except Exception as e:
+            print(f"Erreur lors de la description de l'objet : {e}")
+            response = {"error": "Failed to describe the object."}
         print(response)
         print("------------ Dans la fonciton decrire_objet ---------------------")
         return response
