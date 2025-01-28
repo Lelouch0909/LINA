@@ -21,7 +21,6 @@ RUN apt-get update && apt-get install -y \
     libasound2-dev \
     libjack-dev \
     python3-dev \
-    # Nouvelles dépendances pour OpenCV
     libgl1-mesa-glx \
     libglib2.0-0 \
     libsm6 \
@@ -36,19 +35,27 @@ RUN apt-get update && apt-get install -y \
 # Configuration de ngrok
 RUN ngrok config add-authtoken ${NGROK_AUTH_TOKEN}
 
-# Installation des dépendances Python
+# Installation des dépendances Python avec version spécifique de Pydantic
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt
+    && pip install --no-cache-dir \
+    pydantic==1.10.15 \  
+    -r requirements.txt
+
+# Solution temporaire pour OpenCV
+RUN pip uninstall -y opencv-python && pip install opencv-python-headless==4.10.0.84
 
 # Copie du code
 COPY . .
 
-# Script d'entrée
+# Script d'entrée modifié
 RUN echo '#!/bin/bash\n\
     ngrok http 5000 & \n\
-    while ! curl -s http://localhost:4040/api/tunnels > /dev/null; do sleep 1; done\n\
+    sleep 5  # Délai supplémentaire pour le démarrage de ngrok\n\
+    while ! curl -s http://localhost:4040/api/tunnels | grep -q "public_url"; do\n\
+        sleep 1\n\
+    done\n\
     NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | jq -r .tunnels[0].public_url)\n\
     export NGROK_URL\n\
     echo "NGROK URL: $NGROK_URL"\n\
