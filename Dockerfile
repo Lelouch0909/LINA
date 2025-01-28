@@ -10,10 +10,17 @@ ARG MISTRAL_TOKEN
 ENV HUGGINGFACEHUB_API_TOKEN=${HUGGINGFACEHUB_API_TOKEN}
 ENV MISTRAL_TOKEN=${MISTRAL_TOKEN}
 
-# Installation des dépendances système
+# Installation des dépendances système (ajout des outils de compilation)
 RUN apt-get update && apt-get install -y \
     curl \
     jq \
+    gcc \
+    g++ \
+    make \
+    portaudio19-dev \
+    libasound2-dev \
+    libjack-dev \
+    python3-dev \
     && curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc | tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
     && echo "deb https://ngrok-agent.s3.amazonaws.com bullseye main" | tee /etc/apt/sources.list.d/ngrok.list \
     && apt-get update \
