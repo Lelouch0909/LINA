@@ -15,20 +15,18 @@ WORKDIR /app
 COPY . /app
 
 # Installer les dépendances système (curl, jq, ngrok, python3-pip, etc.)
-# Installer les dépendances nécessaires pour PyAudio
-
-
-# Ajouter la clé GPG pour le dépôt ngrok
-RUN curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc | tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
-    && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | tee /etc/apt/sources.list.d/ngrok.list \
-    && apt-get update && apt-get install -y \
-    portaudio19-dev \
+RUN apt-get update && \
+    apt-get install -y \
+    curl \
+    jq \
     libportaudio2 \
-    libgl1-mesa-glx \
-    ngrok \
-    python3-pip \
-    && ngrok config add-authtoken $NGROK_AUTH_TOKEN \
-    && pip install --no-cache-dir -r /app/requirements.txt
+    python3-pip && \
+    curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc | tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null && \
+    echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | tee /etc/apt/sources.list.d/ngrok.list && \
+    apt-get update && \
+    apt-get install -y ngrok && \
+    ngrok config add-authtoken $NGROK_AUTH_TOKEN && \
+    apt-get clean
 
 # Installer les dépendances Python
 RUN pip install --no-cache-dir -r /app/requirements.txt
