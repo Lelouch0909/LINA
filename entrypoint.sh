@@ -1,22 +1,31 @@
 #!/bin/bash
 
-# Lancer ngrok sur le port 5000 en arrière-plan
-ngrok http 5000 > /dev/null &
+# Lancer ngrok sur le port 5000
+echo "Starting ngrok..."
+ngrok http 5000 &
 
-# Attendre quelques secondes pour que ngrok génère l'URL
+# Attendre que ngrok soit prêt
 sleep 5
 
-# Récupérer l'URL publique générée par ngrok
-NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
+# Vérifier si jq est installé
+if ! command -v jq &> /dev/null
+then
+    echo "jq could not be found. Please ensure it is installed."
+    exit 1
+fi
 
-# Ajouter l'URL ngrok aux variables d'environnement
+# Récupérer l'URL générée par ngrok
+NGROK_URL=$(curl --silent http://127.0.0.1:4040/api/tunnels | jq -r .tunnels[0].public_url)
+if [[ -z "$NGROK_URL" ]]; then
+  echo "Failed to retrieve NGROK_URL."
+  exit 1
+fi
+
+echo "Ngrok URL: $NGROK_URL"
+
+# Ajouter l'URL aux variables d'environnement
 export NGROK_URL
 
-# Afficher les variables d'environnement (pour le debug)
-echo "NGROK_URL=$NGROK_URL"
-echo "HUGGINGFACEHUB_API_TOKEN=$HUGGINGFACEHUB_API_TOKEN"
-echo "MISTRAL_TOKEN=$MISTRAL_TOKEN"
-
-# Lancer le contrôleur ImageController et main.py
-python3 services/cacheServices/ImageController.py &
-python3 main.py
+# Lancer l'application Python
+echo "Launching Python application..."
+python3 /app/main.py
