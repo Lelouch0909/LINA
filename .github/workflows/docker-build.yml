@@ -25,9 +25,9 @@ jobs:
             -t lina:latest .
 
       # Étape 3 : Tester l'image en local (optionnel)
-      - name: Run Docker container for testing
-        run: |
-          docker run --device /dev/snd -e VIDEO_SOURCE="0" lina:latest
+      # - name: Run Docker container for testing
+      #   run: |
+      #     docker run --device /dev/snd -e VIDEO_SOURCE="0" lina:latest
 
 
       # Étape 4 : (Optionnel) Publier l'image vers Docker Hub ou GitHub Container Registry
