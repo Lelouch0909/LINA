@@ -1,16 +1,16 @@
 # Utiliser une image Python de base
 FROM python:3.11-slim
 
-# Définir les arguments (tokens passés au build)
+# Définir les arguments
 ARG NGROK_AUTH_TOKEN
 ARG HUGGINGFACEHUB_API_TOKEN
 ARG MISTRAL_TOKEN
 
-# Définir les variables d'environnement
+# Variables d'environnement
 ENV HUGGINGFACEHUB_API_TOKEN=${HUGGINGFACEHUB_API_TOKEN}
 ENV MISTRAL_TOKEN=${MISTRAL_TOKEN}
 
-# Mise à jour du système et installation des dépendances
+# Installation des dépendances système
 RUN apt-get update && apt-get install -y \
     curl \
     jq \
@@ -23,21 +23,24 @@ RUN apt-get update && apt-get install -y \
 # Configuration de ngrok
 RUN ngrok config add-authtoken ${NGROK_AUTH_TOKEN}
 
-# Copier le code et installer les dépendances Python
+# Installation des dépendances Python
 WORKDIR /app
-COPY . /app
+COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt
 
-# Script d'entrée amélioré
+# Copie du code
+COPY . .
+
+# Script d'entrée
 RUN echo '#!/bin/bash\n\
     ngrok http 5000 & \n\
     while ! curl -s http://localhost:4040/api/tunnels > /dev/null; do sleep 1; done\n\
     NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | jq -r .tunnels[0].public_url)\n\
     export NGROK_URL\n\
     echo "NGROK URL: $NGROK_URL"\n\
-    python3 /app/main.py' > /app/entrypoint.sh \
-    && chmod +x /app/entrypoint.sh
+    python3 /app/main.py' > entrypoint.sh \
+    && chmod +x entrypoint.sh
 
 ENTRYPOINT ["/app/entrypoint.sh"]
 EXPOSE 5000
