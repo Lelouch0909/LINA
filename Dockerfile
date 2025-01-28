@@ -16,10 +16,19 @@ RUN apt-get update && apt-get install -y curl && \
     apt-get clean
 
 # Installer ngrok
-RUN curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
-    && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | tee /etc/apt/sources.list.d/ngrok.list \
+# Installation des dépendances système (ngrok, jq et autres)
+RUN apt-get update && \
+    apt-get install -y \
+    curl \
+    jq \
+    && curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
+    | tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
+    && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
+    | tee /etc/apt/sources.list.d/ngrok.list \
     && apt-get update && apt-get install -y ngrok \
-    && rm -rf /var/lib/apt/lists/*
+    && ngrok config add-authtoken $NGROK_AUTH_TOKEN \
+    && apt-get install -y python3-pip \
+    && pip install --no-cache-dir -r /app/requirements.txt  # Installer les dépendances Python
 
 # Ajouter le token ngrok à la configuration
 RUN mkdir -p /root/.ngrok2 && \
