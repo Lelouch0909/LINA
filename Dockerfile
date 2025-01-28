@@ -20,6 +20,11 @@ RUN apt-get update && \
     curl \
     jq \
     libportaudio2 \
+    libglib2.0-0 \
+    libgthread-2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
     portaudio19-dev \  
     libgl1-mesa-glx \  
     python3-pip && \
