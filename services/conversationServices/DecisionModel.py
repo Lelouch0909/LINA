@@ -69,23 +69,3 @@ class DecisionModel:
         prompt = f"Extract the object or person mentioned in the request: {demande}"
         response = self.model.generate([prompt])  # GPT2Wrapper au lieu de MistralAPIWrapper
         return response.generations[0][0].text.strip()
-
-if __name__ == "__main__":
-    api_key = "ZfulYxd6lx7LBTVPUvhSXsHurD05Qkkl"  #la clé API Mistral
-    grand_modele = DecisionModel()
-
-    demande = "Décris la pièce où je me trouve."
-    reponse = grand_modele.analyser_demande(demande)
-    print(reponse)
-
-    demande = "Où se trouve la télécommande ?"
-    reponse = grand_modele.analyser_demande(demande)
-    print(reponse)
-
-    demande = "Décris-moi le canapé."
-    reponse = grand_modele.analyser_demande(demande)
-    print(reponse)
-
-    demande = "Quel temps fait-il dehors ?"
-    reponse = grand_modele.analyser_demande(demande)
-    print(reponse)

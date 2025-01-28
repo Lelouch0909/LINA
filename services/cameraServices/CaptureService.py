@@ -81,9 +81,9 @@ class Camera:
             files = sorted(os.listdir(self.save_path), key=lambda x: os.path.getmtime(os.path.join(self.save_path, x)))
 
             # Vérifier si le nombre d'images dépasse 200
-            if len(files) > 1000:
+            if len(files) > 200:
                 # Supprimer les 100 images les plus anciennes
-                for file in files[:500]:
+                for file in files[:100]:
                     file_path = os.path.join(self.save_path, file)
                     os.remove(file_path)
 

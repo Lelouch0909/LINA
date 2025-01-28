@@ -1,5 +1,4 @@
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
-from transformers import GPT2LMHeadModel, GPT2Tokenizer
 
 
 class PetitModeleConversation:
@@ -11,8 +10,8 @@ class PetitModeleConversation:
             "greeting": "Hello, how can I assist you today?",
             "acknowledgment": "I'm on it, please give me a moment...",
             "confirmation": "You said: '{demand}'. Is that correct? (Please reply with 'Yes' or 'No')",
-            "closing": "Please rephrase the following response in a more human-like manner and close the conversation politely: '{response}'"        
-            }
+            "closing": " {response} thanks for the listening"
+        }
 
     def respond(self, user_input, prompt_type="confirmation", response=None):
         # Récupérer le prompt en fonction du type (un prompt est un texte qui sert de contexte ou d'instruction)
@@ -20,11 +19,11 @@ class PetitModeleConversation:
         
         # Formater le prompt avec les variables appropriées
         if prompt_type == "confirmation":
-            prompt = prompt.format(demand=user_input)
+            return self.predefined_prompts["confirmation"].format(demand=user_input)
         elif prompt_type == "closing":
             if response is None:
                 raise ValueError("Le paramètre 'response' est requis pour le type de prompt 'closing'.")
-            prompt = prompt.format(response=response)
+            return self.predefined_prompts["closing"].format(response=response)
 
         # Encoder le prompt et générer la réponse (conversion du texte en nombres pour le modèle)
         inputs = self.tokenizer.encode(prompt, return_tensors="pt")
