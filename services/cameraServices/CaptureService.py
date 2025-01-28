@@ -15,7 +15,13 @@ class Camera:
 
     def __init__(self):
         if not hasattr(self, 'cap'):
-            self.cap = cv2.VideoCapture(0)  # Utiliser la caméra par défaut
+            source = os.getenv("CAMERA_SOURCE")
+            if source == "0":
+                self.cap = cv2.VideoCapture(0)  # Utiliser la caméra par défaut
+            elif source == "1":
+                self.cap = cv2.VideoCapture(1)  # Utiliser la caméra par défaut
+            else:   
+                self.cap = cv2.VideoCapture(source)  # Utiliser la caméra par défaut
             self.pause_reading = threading.Event()
             self.resume_reading = threading.Event()
             self.save_dir = os.path.abspath("ressources/videos")

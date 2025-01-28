@@ -22,16 +22,16 @@ jobs:
             --build-arg NGROK_AUTH_TOKEN=${{ secrets.NGROK_AUTH_TOKEN }} \
             --build-arg HUGGINGFACE_TOKEN=${{ secrets.HUGGINGFACE_TOKEN }} \
             --build-arg MISTRAL_TOKEN=${{ secrets.MISTRAL_TOKEN }} \
-            -t my-python-app:latest .
+            -t LINA:latest .
 
       # Étape 3 : Tester l'image en local (optionnel)
       - name: Run Docker container for testing
         run: |
-          docker run my-python-app:latest
+          docker run -e VIDEO_SOURCE="0" LINA:latest
 
       # Étape 4 : (Optionnel) Publier l'image vers Docker Hub ou GitHub Container Registry
       - name: Push Docker image to Docker Hub
         if: ${{ github.event_name == 'push' }}
         run: |
-          docker tag my-python-app:latest mydockerhubuser/my-python-app:latest
-          docker push mydockerhubuser/my-python-app:latest
+          docker tag LINA:latest mydockerhubuser/LINA:latest
+          docker push mydockerhubuser/LINA:latest
