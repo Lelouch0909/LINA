@@ -30,13 +30,25 @@ RUN apt-get update && \
     && apt-get install -y python3-pip \
     && pip install --no-cache-dir -r /app/requirements.txt  # Installer les dépendances Python
 
-# Ajouter le token ngrok à la configuration
-RUN mkdir -p /root/.ngrok2 && \
-    echo "authtoken: ${NGROK_AUTH_TOKEN}" > /root/.ngrok2/ngrok.yml
 
 # Copier le code source dans le conteneur
 WORKDIR /app
 COPY . /app
 
-# Lancer un script pour gérer ngrok, récupérer l'URL et lancer main.py
-CMD ["bash", "/app/entrypoint.sh"]
+# Script d'entrée pour lancer ngrok et ton application
+RUN echo '#!/bin/bash\n\
+    ngrok http 5000 & \n\
+    sleep 5 \n\
+    NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | jq -r .tunnels[0].public_url) \n\
+    export NGROK_URL=$NGROK_URL \n\
+    echo "NGROK_URL=$NGROK_URL" \n\
+    python3 /app/main.py' > /app/entrypoint.sh
+
+# Rendre le script exécutable
+RUN chmod +x /app/entrypoint.sh
+
+# Lancer le script d'entrée
+ENTRYPOINT ["/app/entrypoint.sh"]
+
+# Exposer le port 5000 pour ngrok
+EXPOSE 5000
