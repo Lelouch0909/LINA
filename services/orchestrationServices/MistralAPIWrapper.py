@@ -6,7 +6,7 @@ from mistralai import Mistral
 from typing import List, ClassVar, Optional
  
 class MistralAPIWrapper(BaseLLM):
-    default_apikey: ClassVar[Optional[str]] = os.getenv("MISTRAL_API_KEY")
+    default_apikey: ClassVar[Optional[str]] = os.getenv("MISTRAL_TOKEN")
     api_key: str = Field(default=default_apikey, description="La clé API pour accéder à Mistral.")
     client: Mistral = Field(default=None, description="Le client Mistral.")
 
