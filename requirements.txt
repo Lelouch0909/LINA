@@ -6,6 +6,6 @@ mistralai==1.4.0
 opencv_python==4.10.0.84
 PyAudio==0.2.14
 pydantic==2.10.6
-torch==2.1.0a0+gitunknown
+torch==2.1.0
 transformers==4.47.1
 vosk==0.3.45
