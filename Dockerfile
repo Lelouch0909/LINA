@@ -54,3 +54,4 @@ ENTRYPOINT ["/app/entrypoint.sh"]
 
 # Exposer le port 5000 pour ngrok
 EXPOSE 5000
+EXPOSE 8081
