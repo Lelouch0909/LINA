@@ -14,39 +14,22 @@ ENV MISTRAL_TOKEN=${MISTRAL_TOKEN}
 WORKDIR /app
 COPY . /app
 
-# Installer les dépendances nécessaires
-RUN apt-get update && apt-get install -y curl && \
-    pip install --no-cache-dir flask requests && \
-    apt-get clean
-
-
-    RUN apt-get update && \
-    apt-get install -y \
-    curl \
-    jq \
-    libportaudio2 \
-    && curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
-    | tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
-    && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
-    | tee /etc/apt/sources.list.d/ngrok.list \
-    && apt-get update && apt-get install -y ngrok \
-    && ngrok config add-authtoken $NGROK_AUTH_TOKEN \
-    && apt-get install -y python3-pip
-
-
-# Installation des dépendances système (ngrok, jq et autres)
+# Installer les dépendances système (curl, jq, ngrok, python3-pip, etc.)
 RUN apt-get update && \
     apt-get install -y \
     curl \
     jq \
-    && curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
-    | tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
-    && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
-    | tee /etc/apt/sources.list.d/ngrok.list \
-    && apt-get update && apt-get install -y ngrok \
-    && ngrok config add-authtoken $NGROK_AUTH_TOKEN \
-    && apt-get install -y python3-pip \
-    && pip install --no-cache-dir -r /app/requirements.txt  # Installer les dépendances Python
+    libportaudio2 \
+    python3-pip && \
+    curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc | tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null && \
+    echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | tee /etc/apt/sources.list.d/ngrok.list && \
+    apt-get update && \
+    apt-get install -y ngrok && \
+    ngrok config add-authtoken $NGROK_AUTH_TOKEN && \
+    apt-get clean
+
+# Installer les dépendances Python
+RUN pip install --no-cache-dir -r /app/requirements.txt
 
 # Script d'entrée pour lancer ngrok et ton application
 RUN echo '#!/bin/bash\n\
