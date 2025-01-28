@@ -33,13 +33,19 @@ RUN ngrok config add-authtoken ${NGROK_AUTH_TOKEN}
 WORKDIR /app
 COPY requirements.txt .
 
-RUN sed -i 's/pydantic==2.10.6/pydantic>=1.10,<2.0/' requirements.txt
-
-RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt \
-    && pip install opencv-python-headless==4.10.0.84
+# Solution pour contourner le conflit Pydantic/LangChain
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir \
+    "pydantic<2" \
+    "langchain==0.0.348" \ 
+    -r requirements.txt && \
+    sed -i '/pydantic/d' requirements.txt && \
+    pip install --no-cache-dir opencv-python-headless==4.10.0.84
 
 COPY . .
+
+# Patch automatique pour MistralAPIWrapper
+RUN sed -i 's/apikey = None/apikey: str = None/' services/orchestrationServices/MistralAPIWrapper.py
 
 RUN echo '#!/bin/bash\n\
     ngrok http 5000 &\n\
