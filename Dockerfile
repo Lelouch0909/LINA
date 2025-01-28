@@ -1,16 +1,12 @@
-# Utiliser une image Python de base
 FROM python:3.11-slim
 
-# Définir les arguments
 ARG NGROK_AUTH_TOKEN
 ARG HUGGINGFACEHUB_API_TOKEN
 ARG MISTRAL_TOKEN
 
-# Variables d'environnement
 ENV HUGGINGFACEHUB_API_TOKEN=${HUGGINGFACEHUB_API_TOKEN}
 ENV MISTRAL_TOKEN=${MISTRAL_TOKEN}
 
-# Installation des dépendances système
 RUN apt-get update && apt-get install -y \
     curl \
     jq \
@@ -32,27 +28,22 @@ RUN apt-get update && apt-get install -y \
     && apt-get install -y ngrok \
     && rm -rf /var/lib/apt/lists/*
 
-# Configuration de ngrok
 RUN ngrok config add-authtoken ${NGROK_AUTH_TOKEN}
 
-# Installation des dépendances Python avec version spécifique de Pydantic
 WORKDIR /app
 COPY requirements.txt .
+
+RUN sed -i 's/pydantic==2.10.6/pydantic>=1.10,<2.0/' requirements.txt
+
 RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir \
-    pydantic==1.10.15 \  
-    -r requirements.txt
+    && pip install --no-cache-dir -r requirements.txt \
+    && pip install opencv-python-headless==4.10.0.84
 
-# Solution temporaire pour OpenCV
-RUN pip uninstall -y opencv-python && pip install opencv-python-headless==4.10.0.84
-
-# Copie du code
 COPY . .
 
-# Script d'entrée modifié
 RUN echo '#!/bin/bash\n\
-    ngrok http 5000 & \n\
-    sleep 5  # Délai supplémentaire pour le démarrage de ngrok\n\
+    ngrok http 5000 &\n\
+    sleep 5\n\
     while ! curl -s http://localhost:4040/api/tunnels | grep -q "public_url"; do\n\
         sleep 1\n\
     done\n\
