@@ -3,14 +3,14 @@ from langchain.llms import BaseLLM
 from langchain.schema import LLMResult, Generation
 from pydantic import Field
 from mistralai import Mistral
-from typing import List
+from typing import List, ClassVar, Optional
  
 class MistralAPIWrapper(BaseLLM):
-    apikey = os.getenv("MISTRAL_API_KEY")
-    api_key: str = Field(default=apikey, description="La clé API pour accéder à Mistral.")
+    default_apikey: ClassVar[Optional[str]] = os.getenv("MISTRAL_API_KEY")
+    api_key: str = Field(default=default_apikey, description="La clé API pour accéder à Mistral.")
     client: Mistral = Field(default=None, description="Le client Mistral.")
 
-    def __init__(self, api_key: str = apikey):
+    def __init__(self, api_key: str = default_apikey):
         super().__init__(api_key=api_key)  # Initialiser la classe parente avec api_key
         self.client = Mistral(api_key=api_key)  # Initialiser le client Mistral
 
