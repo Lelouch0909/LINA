@@ -3,5 +3,5 @@
 .vscode
 .idea
 .git
-/ressources
+/ressources/videos/initial/*
 */__pycache__
