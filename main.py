@@ -7,7 +7,6 @@ from threading import Thread
 from services.environmentServices.EnvironmentModel import EnvironmentModel
 from services.orchestrationServices.OrcherstrationModel import OrchestrationModel
 
-os.environ["HUGGINGFACEHUB_API_TOKEN"] = "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"
 os.environ["VOSK_MODEL_PATH"] = "./models/vosk-model-small-en-us-0.15"
 os.environ["NGROK_URL"] = "https://f689-129-0-60-35.ngrok-free.app"
 

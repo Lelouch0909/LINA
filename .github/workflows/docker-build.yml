@@ -1,0 +1,47 @@
+name: LINA DOCKER IMAGE BUILD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Étape 1: Récupérer le code source du dépôt
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+
+
+      # Étape 6: Construire et pousser l'image  vers le registre
+      - name: Build Docker image
+        run: |
+          docker build \
+            --build-arg NGROK_AUTH_TOKEN=${{ secrets.NGROK_AUTH_TOKEN }} \
+            --build-arg HUGGINGFACEHUB_API_TOKEN=${{ secrets.HUGGINGFACEHUB_API_TOKEN }} \
+            --build-arg MISTRAL_TOKEN=${{ secrets.MISTRAL_TOKEN }} \
+            -t my-python-app:latest .
+
+      # Étape 4 : Lancer le conteneur Docker
+      - name: Run Docker container
+        run: |
+          docker run \
+            -e NGROK_AUTH_TOKEN=${{ secrets.NGROK_AUTH_TOKEN }} \
+            -e HUGGINGFACE_TOKEN=${{ secrets.HUGGINGFACE_TOKEN }} \
+            -e MISTRAL_TOKEN=${{ secrets.MISTRAL_TOKEN }} \
+            my-python-app:latest
+
+      # Étape 5 : Pousser l'image vers Docker Hub (optionnel)
+      - name: Push Docker image to Docker Hub
+        run: |
+          docker tag my-python-app:latest mydockerhubuser/my-python-app:latest
+          docker push mydockerhubuser/my-python-app:latest
